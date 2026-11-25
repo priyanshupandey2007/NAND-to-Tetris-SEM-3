@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Capstone Dashboard - Make the Computer Draw a Box (K = 51)</title>
+  <meta name="description" content="Interactive Hack computer, two-pass assembler, and Box.asm workbench for Nand to Tetris - I (ETCNTC301), Priyanshu Pandey (2501730051).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="topbar-inner">
+        <div class="brand">
+          <h1>Capstone Dashboard: Make the Computer Draw a Box</h1>
+          <p class="brand-meta" id="student-meta">Nand to Tetris - I (ETCNTC301) | K.R. Mangalam University | Student: Priyanshu Pandey (Roll: 2501730051, K = 51)</p>
+        </div>
+        <div class="status-chip is-active" id="global-status" role="status">K = 51 | Row 51 | 64 x 20 px</div>
+      </div>
+
+      <nav class="tab-strip" role="tablist" aria-label="Capstone project modules">
+        <button type="button" class="tab-btn" role="tab" id="tab-simulator" aria-selected="true" aria-controls="panel-simulator" data-tab="simulator">Screen &amp; CPU Simulator</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-assembler" aria-selected="false" aria-controls="panel-assembler" data-tab="assembler">Two-Pass Assembler</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-hdl" aria-selected="false" aria-controls="panel-hdl" data-tab="hdl">HDL Chip Architecture</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-viva" aria-selected="false" aria-controls="panel-viva" data-tab="viva">Viva &amp; K Parameter Calculator</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-reports" aria-selected="false" aria-controls="panel-reports" data-tab="reports">Report &amp; Downloads</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="container">
+      <!-- TAB 1: SCREEN & CPU SIMULATOR -->
+      <section id="panel-simulator" role="tabpanel" aria-labelledby="tab-simulator">
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Hack Screen Canvas (512 x 256)</h2>
+              <span class="status-chip" id="kbd-badge" role="status">Key: Idle (0) - Screen Clear</span>
+            </div>
+
+            <div class="screen-frame">
+              <canvas id="hack-screen" width="512" height="256" aria-label="512 by 256 monochrome Hack computer screen"></canvas>
+            </div>
+
+            <div class="controls-row">
+              <button type="button" class="btn btn--primary" id="btn-hold-key">Hold key</button>
+              <button type="button" class="btn" id="btn-pulse-key">Key pulse (1 Hz)</button>
+              <button type="button" class="btn" id="btn-pause-cpu">Pause CPU</button>
+              <button type="button" class="btn" id="btn-reset-cpu">Reset CPU</button>
+            </div>
+
+            <p class="helper-note" id="sim-helper">
+              Interactive keyboard: hold any physical key on your keyboard while this tab is focused to draw the 64 x 20 box at Row 51, and release to clear it.
+            </p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Hack CPU &amp; Memory Telemetry</h2>
+              <span class="status-chip is-active" id="fps-badge" role="status">Running at 60 FPS</span>
+            </div>
+
+            <dl class="telemetry-list">
+              <div class="telemetry-row">
+                <dt>Personal Number (K)</dt>
+                <dd class="num" id="tel-k">51</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Box Starting Row</dt>
+                <dd class="num" id="tel-row">Row 51 (Address 18016 / 0x4660)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Box Dimensions</dt>
+                <dd class="num" id="tel-dims">64 px width x 20 rows height (4 words/row)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Program Counter (PC)</dt>
+                <dd class="num" id="tel-pc">0</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Register A</dt>
+                <dd class="num" id="tel-a">0</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Register D</dt>
+                <dd class="num" id="tel-d">0</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Keyboard register (24576)</dt>
+                <dd class="num highlight" id="tel-kbd">0 (No Key)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt id="tel-word0-label">RAM[18016] (Screen Row 51, Word 0)</dt>
+                <dd class="num" id="tel-word0">0x0000 (0)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt id="tel-word1-label">RAM[18017] (Screen Row 51, Word 1)</dt>
+                <dd class="num" id="tel-word1">0x0000 (0)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt id="tel-word2-label">RAM[18018] (Screen Row 51, Word 2)</dt>
+                <dd class="num" id="tel-word2">0x0000 (0)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt id="tel-word3-label">RAM[18019] (Screen Row 51, Word 3)</dt>
+                <dd class="num" id="tel-word3">0x0000 (0)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Total Cycles Executed</dt>
+                <dd class="num" id="tel-cycles">0</dd>
+              </div>
+            </dl>
+
+            <div class="proof-block" id="memory-proof">
+              <div class="proof-title">Memory Calculation Proof (K = 51)</div>
+              <div>Base Address = SCREEN + (32 x 51) = 16384 + 1632 = 18016 (0x4660)</div>
+              <div>Width = 16 x ((51 mod 4) + 1) = 16 x 4 = 64 pixels (4 words/row, 80 words across 20 rows)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TWO-PASS ASSEMBLER -->
+      <section id="panel-assembler" role="tabpanel" aria-labelledby="tab-assembler" hidden>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Hack Assembly Input (.asm)</h2>
+              <span class="status-chip is-active" id="asm-k-badge">K mod 3 = 0 (Save symbols.txt)</span>
+            </div>
+
+            <div class="controls-row" style="margin-top: 0; margin-bottom: var(--space-sm);">
+              <button type="button" class="btn" id="preset-box">Load Box.asm (K = 51)</button>
+              <button type="button" class="btn" id="preset-add">Load Add.asm</button>
+              <button type="button" class="btn" id="preset-bad">Test Invalid Syntax</button>
+              <button type="button" class="btn" id="preset-dup">Test Duplicate Label</button>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="asm-editor">Assembly Source Code</label>
+              <textarea id="asm-editor" class="code-editor" spellcheck="false"></textarea>
+            </div>
+
+            <div class="controls-row">
+              <label class="field-label" for="asm-k-input">Personal K:</label>
+              <input type="number" id="asm-k-input" class="input input-inline" value="51" min="0" max="235">
+              <button type="button" class="btn btn--primary" id="btn-assemble">Assemble with Python</button>
+              <button type="button" class="btn" id="btn-load-sim">Load into Simulator</button>
+            </div>
+            <p class="helper-note" id="asm-helper">Runs the two-pass assembler in assembler.py on the local server.</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Machine Code &amp; Symbol Table</h2>
+              <span class="status-chip" id="asm-status-chip" role="status">Ready (88 instructions)</span>
+            </div>
+
+            <div id="asm-feedback" class="message-banner is-success">
+              Loaded Box.hack (88 instructions) and symbols.txt for K = 51.
+            </div>
+
+            <div class="split-sub">
+              <div>
+                <h3 style="margin-bottom: var(--space-xs);">Binary Output (.hack)</h3>
+                <div class="data-table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ROM</th>
+                        <th>16-Bit Binary</th>
+                        <th>Hex</th>
+                      </tr>
+                    </thead>
+                    <tbody id="hack-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <h3 style="margin-bottom: var(--space-xs);">Symbol Table (symbols.txt)</h3>
+                <div class="data-table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Symbol</th>
+                        <th>Dec</th>
+                        <th>Kind</th>
+                      </tr>
+                    </thead>
+                    <tbody id="symbols-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: HDL CHIP ARCHITECTURE -->
+      <section id="panel-hdl" role="tabpanel" aria-labelledby="tab-hdl" hidden>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Part A: HDL Verification Suite</h2>
+              <button type="button" class="btn btn--primary" id="btn-run-verify">Run Verification Suite</button>
+            </div>
+
+            <div id="verify-banner" class="message-banner">
+              Click Run Verification Suite to execute Memory.hdl, CPU.hdl, Computer.hdl, assembler.py, and Box.hack tests.
+            </div>
+
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Verification Stage</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="verify-tbody">
+                  <tr>
+                    <td>Memory.hdl (Memory.tst / Memory.cmp)</td>
+                    <td>Pending</td>
+                    <td>RAM16K, Screen, and Keyboard DMux/Mux4Way16 mapping</td>
+                  </tr>
+                  <tr>
+                    <td>CPU.hdl (CPU.tst / CPU.cmp)</td>
+                    <td>Pending</td>
+                    <td>A/C instruction decode, ALU flags, PC jump logic</td>
+                  </tr>
+                  <tr>
+                    <td>Computer.hdl (ComputerAdd.tst / ComputerAdd.cmp)</td>
+                    <td>Pending</td>
+                    <td>ROM32K, CPU, and Memory closed-loop execution</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="proof-block">
+              <div class="proof-title">Hack Computer Signal Path</div>
+              <pre class="code-view" style="max-height: 220px;">+--------+   instruction[16]   +-----+   outM[16], writeM   +--------+
+| ROM32K | ------------------&gt; | CPU | -------------------&gt; | Memory |
+|        | &lt;------------------ |     | &lt;------------------- | RAM16K |
++--------+       pc[15]        +-----+       inM[16]        | Screen |
+                                  ^                         | KBD    |
+                                  | reset                   +--------+</pre>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>HDL &amp; Test Script Source</h2>
+              <span class="status-chip" id="hdl-file-chip">Memory.hdl</span>
+            </div>
+
+            <div class="controls-row" style="margin-top: 0; margin-bottom: var(--space-sm);">
+              <button type="button" class="btn btn--selected" data-hdl="Memory.hdl">Memory.hdl</button>
+              <button type="button" class="btn" data-hdl="CPU.hdl">CPU.hdl</button>
+              <button type="button" class="btn" data-hdl="Computer.hdl">Computer.hdl</button>
+              <button type="button" class="btn" data-hdl="Memory.tst">Memory.tst</button>
+              <button type="button" class="btn" data-hdl="CPU.tst">CPU.tst</button>
+              <button type="button" class="btn" data-hdl="ComputerAdd.tst">ComputerAdd.tst</button>
+            </div>
+
+            <pre class="code-view" id="hdl-source-view">Loading HDL file...</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: VIVA & K PARAMETER CALCULATOR -->
+      <section id="panel-viva" role="tabpanel" aria-labelledby="tab-viva" hidden>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Personal Number (K) &amp; Box Calculator</h2>
+              <span class="status-chip is-active" id="viva-k-chip">K = 51</span>
+            </div>
+
+            <div class="controls-row" style="margin-top: 0; margin-bottom: var(--space-md);">
+              <label class="field-label" for="viva-k-input">Personal Number K (0 to 235):</label>
+              <input type="number" id="viva-k-input" class="input input-inline" value="51" min="0" max="235">
+              <button type="button" class="btn btn--primary" id="btn-apply-k">Generate &amp; load</button>
+              <button type="button" class="btn" id="btn-viva-shift">Shift down 10 rows</button>
+            </div>
+
+            <dl class="telemetry-list">
+              <div class="telemetry-row">
+                <dt>Starting Screen Row (r = K)</dt>
+                <dd class="num" id="calc-start-row">Row 51 (Rows 51 to 70)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Base RAM Address (16384 + 32 x K)</dt>
+                <dd class="num highlight" id="calc-base-addr">18016 (0x4660)</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Words per Row ((K mod 4) + 1)</dt>
+                <dd class="num" id="calc-words">4 words/row</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Box Width in Pixels</dt>
+                <dd class="num" id="calc-width">64 pixels</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Box Height</dt>
+                <dd class="num">20 screen rows</dd>
+              </div>
+              <div class="telemetry-row">
+                <dt>Assembler Extra Feature (K mod 3)</dt>
+                <dd id="calc-mod3">51 mod 3 = 0: Save all symbols to symbols.txt</dd>
+              </div>
+            </dl>
+
+            <div class="proof-block">
+              <div class="proof-title">Mistake Encountered &amp; Fixed (Box.asm)</div>
+              <div>Problem: Using a single pointer variable (wordAddr) without resetting it at the start of each row produced a slanted staircase.</div>
+              <div>Fix: Track rowAddr (+32 per row) separately and reset wordAddr = rowAddr before every 4-word row loop.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Viva Q&amp;A &amp; Submission Checklist</h2>
+              <span class="status-chip" id="checklist-count">11 / 11 Ready</span>
+            </div>
+
+            <div class="proof-block" style="margin-top: 0; padding-top: 0; border-top: 0; margin-bottom: var(--space-md);">
+              <div class="proof-title">Key Viva Answers (K = 51)</div>
+              <div>1. Memory.hdl uses DMux on load using address[14] and address[13] to isolate RAM16K (0..16383), Screen (16384..24575), and Keyboard (24576).</div>
+              <div>2. assembler.py Pass 1 maps (LABEL) to ROM addresses without incrementing PC; Pass 2 allocates new variables starting at RAM[16].</div>
+              <div>3. Box.asm polls @KBD (24576); non-zero draws -1 across 4 words x 20 rows from 18016, zero writes 0 to clear.</div>
+              <div>4. Move box down 10 rows during viva: replace @18016 with @18336 (18016 + 320).</div>
+            </div>
+
+            <ul class="checklist" id="submission-checklist">
+              <li><input type="checkbox" id="chk-1" checked><label for="chk-1">Calculated Personal Number K = 51 (Roll 2501730051)</label></li>
+              <li><input type="checkbox" id="chk-2" checked><label for="chk-2">Completed Memory.hdl, CPU.hdl, and Computer.hdl</label></li>
+              <li><input type="checkbox" id="chk-3" checked><label for="chk-3">Verified HDL behavior against Memory.cmp, CPU.cmp, ComputerAdd.cmp</label></li>
+              <li><input type="checkbox" id="chk-4" checked><label for="chk-4">Built two-pass assembler.py with K mod 3 = 0 symbols.txt export</label></li>
+              <li><input type="checkbox" id="chk-5" checked><label for="chk-5">Implemented Box.asm with 64 x 20 dimensions at Row 51 (18016)</label></li>
+              <li><input type="checkbox" id="chk-6" checked><label for="chk-6">Assembled Box.hack and verified key press / release clearing</label></li>
+              <li><input type="checkbox" id="chk-7" checked><label for="chk-7">Generated PDF report with CPU Emulator screen capture</label></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: REPORT & DOWNLOADS -->
+      <section id="panel-reports" role="tabpanel" aria-labelledby="tab-reports" hidden>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Project Deliverables &amp; Downloads</h2>
+              <button type="button" class="btn btn--primary" id="btn-export-png">Capture Live Screen PNG</button>
+            </div>
+
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="files-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Verified CPU Emulator Captures</h2>
+              <span class="status-chip is-active">64 x 20 px at Row 51</span>
+            </div>
+
+            <div class="figure-grid">
+              <figure class="shot-figure">
+                <img src="./Part_C/screenshots/box_key_pressed.png" alt="Hack screen showing 64 by 20 black box at row 51 while key is pressed" width="512" height="290">
+                <figcaption>Key Pressed (KBD = 65): 64 x 20 black rectangle at address 18016.</figcaption>
+              </figure>
+              <figure class="shot-figure">
+                <img src="./Part_C/screenshots/box_key_released.png" alt="Hack screen cleared to white after key release" width="512" height="290">
+                <figcaption>Key Released (KBD = 0): Box words cleared back to 0.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="./dashboard.js"></script>
+</body>
+</html>
