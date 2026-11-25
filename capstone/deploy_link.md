@@ -1,1 +1,2 @@
-https://priyanshupandey2007.github.io/NAND-to-Tetris-SEM-3/capstone/dashboard.html
+- **Live Dashboard:** https://priyanshupandey2007.github.io/NAND-to-Tetris-SEM-3/capstone/dashboard.html
+- **Video Explanation Link:** https://drive.google.com/file/d/1YRy0uXNaEcDIksSNbXDoT2BniHboCAlg/view?usp=sharing

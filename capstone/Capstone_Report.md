@@ -5,6 +5,8 @@
 **Subject Code:** ETCNTC301  
 **Program:** B.Tech Computer Science & Engineering (AI & ML)  
 **School:** School of Engineering & Technology, K.R. Mangalam University  
+**Live Dashboard:** https://priyanshupandey2007.github.io/NAND-to-Tetris-SEM-3/capstone/dashboard.html  
+**Video Explanation Link:** https://drive.google.com/file/d/1YRy0uXNaEcDIksSNbXDoT2BniHboCAlg/view?usp=sharing  
 
 ---
 
