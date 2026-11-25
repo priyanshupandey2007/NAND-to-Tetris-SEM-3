@@ -22,10 +22,10 @@
       </div>
 
       <nav class="tab-strip" role="tablist" aria-label="Capstone project modules">
-        <button type="button" class="tab-btn" role="tab" id="tab-simulator" aria-selected="true" aria-controls="panel-simulator" data-tab="simulator">Screen &amp; CPU Simulator</button>
-        <button type="button" class="tab-btn" role="tab" id="tab-assembler" aria-selected="false" aria-controls="panel-assembler" data-tab="assembler">Two-Pass Assembler</button>
-        <button type="button" class="tab-btn" role="tab" id="tab-hdl" aria-selected="false" aria-controls="panel-hdl" data-tab="hdl">HDL Chip Architecture</button>
-        <button type="button" class="tab-btn" role="tab" id="tab-viva" aria-selected="false" aria-controls="panel-viva" data-tab="viva">Viva &amp; K Parameter Calculator</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-hdl" aria-selected="false" aria-controls="panel-hdl" data-tab="hdl">Part A: Hack Computer (HDL)</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-assembler" aria-selected="false" aria-controls="panel-assembler" data-tab="assembler">Part B: Python Assembler</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-simulator" aria-selected="true" aria-controls="panel-simulator" data-tab="simulator">Part C: Box &amp; CPU Simulator</button>
+        <button type="button" class="tab-btn" role="tab" id="tab-viva" aria-selected="false" aria-controls="panel-viva" data-tab="viva">Viva &amp; K Calculator</button>
         <button type="button" class="tab-btn" role="tab" id="tab-reports" aria-selected="false" aria-controls="panel-reports" data-tab="reports">Report &amp; Downloads</button>
       </nav>
     </div>
@@ -33,12 +33,12 @@
 
   <main class="workspace">
     <div class="container">
-      <!-- TAB 1: SCREEN & CPU SIMULATOR -->
+      <!-- TAB 1: PART C - BOX & CPU SIMULATOR -->
       <section id="panel-simulator" role="tabpanel" aria-labelledby="tab-simulator">
         <div class="panel-grid">
           <div class="panel">
             <div class="panel-header">
-              <h2>Hack Screen Canvas (512 x 256)</h2>
+              <h2>Part C: Box.asm Screen (512 x 256)</h2>
               <span class="status-chip" id="kbd-badge" role="status">Key: Idle (0) - Screen Clear</span>
             </div>
 
@@ -124,12 +124,12 @@
         </div>
       </section>
 
-      <!-- TAB 2: TWO-PASS ASSEMBLER -->
+      <!-- TAB 2: PART B - PYTHON ASSEMBLER -->
       <section id="panel-assembler" role="tabpanel" aria-labelledby="tab-assembler" hidden>
         <div class="panel-grid">
           <div class="panel">
             <div class="panel-header">
-              <h2>Hack Assembly Input (.asm)</h2>
+              <h2>Part B: Python Assembler (.asm)</h2>
               <span class="status-chip is-active" id="asm-k-badge">K mod 3 = 0 (Save symbols.txt)</span>
             </div>
 
@@ -164,10 +164,10 @@
               Loaded Box.hack (88 instructions) and symbols.txt for K = 51.
             </div>
 
-            <div class="split-sub">
+            <div class="asm-outputs">
               <div>
                 <h3 style="margin-bottom: var(--space-xs);">Binary Output (.hack)</h3>
-                <div class="data-table-wrap">
+                <div class="data-table-wrap data-table-wrap--short">
                   <table class="data-table">
                     <thead>
                       <tr>
@@ -183,7 +183,7 @@
 
               <div>
                 <h3 style="margin-bottom: var(--space-xs);">Symbol Table (symbols.txt)</h3>
-                <div class="data-table-wrap">
+                <div class="data-table-wrap data-table-wrap--short">
                   <table class="data-table">
                     <thead>
                       <tr>
