@@ -14,8 +14,10 @@ import io
 import json
 import mimetypes
 import os
+import socket
 import sys
 import tempfile
+import threading
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
@@ -139,6 +141,10 @@ class DashboardHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+        super().end_headers()
+
     def log_message(self, format, *args):
         return
 
@@ -147,7 +153,6 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(raw)))
-        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(raw)
 
@@ -262,12 +267,21 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self._send_json({"ok": False, "error": "Unknown endpoint"}, HTTPStatus.NOT_FOUND)
 
 
+class ThreadingHTTPServerV6(ThreadingHTTPServer):
+    address_family = socket.AF_INET6
+
+
 def serve(port: int = DEFAULT_PORT) -> None:
     mimetypes.add_type("text/css", ".css")
     mimetypes.add_type("application/javascript", ".js")
-    server = ThreadingHTTPServer(("127.0.0.1", port), DashboardHandler)
+    server_v4 = ThreadingHTTPServer(("127.0.0.1", port), DashboardHandler)
+    try:
+        server_v6 = ThreadingHTTPServerV6(("::1", port), DashboardHandler)
+        threading.Thread(target=server_v6.serve_forever, daemon=True).start()
+    except OSError:
+        pass
     print(f"Capstone dashboard running at http://localhost:{port}/dashboard.html", flush=True)
-    server.serve_forever()
+    server_v4.serve_forever()
 
 
 if __name__ == "__main__":
