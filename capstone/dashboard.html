@@ -51,11 +51,18 @@
               <button type="button" class="btn" id="btn-pulse-key">Key pulse (1 Hz)</button>
               <button type="button" class="btn" id="btn-pause-cpu">Pause CPU</button>
               <button type="button" class="btn" id="btn-reset-cpu">Reset CPU</button>
+              <button type="button" class="btn" id="btn-sim-shift">Viva: shift +10 rows</button>
+              <button type="button" class="btn" id="btn-sim-reset-k">Restore K = 51</button>
             </div>
 
             <p class="helper-note" id="sim-helper">
               Interactive keyboard: hold any physical key on your keyboard while this tab is focused to draw the 64 x 20 box at Row 51, and release to clear it.
             </p>
+
+            <div class="proof-block">
+              <div class="proof-title">Part C: Program Behavior &amp; Development Stages</div>
+              <div>1. Draw 16 px word at Row 51 (18016) -&gt; 2. Expand to 4 words (64 px) -&gt; 3. Loop 20 rows (+32/row) -&gt; 4. Poll RAM[24576] to draw (-1) or clear (0).</div>
+            </div>
           </div>
 
           <div class="panel">
@@ -151,7 +158,14 @@
               <button type="button" class="btn btn--primary" id="btn-assemble">Assemble with Python</button>
               <button type="button" class="btn" id="btn-load-sim">Load into Simulator</button>
             </div>
-            <p class="helper-note" id="asm-helper">Runs the two-pass assembler in assembler.py on the local server.</p>
+            <p class="helper-note" id="asm-helper">Runs the two-pass assembler in Part_B/assembler.py on the local server.</p>
+
+            <div class="proof-block" id="asm-pass-summary">
+              <div class="proof-title">Part B: Two-Pass Pipeline Summary</div>
+              <div id="asm-pass1-line">Pass 1 (Labels): strips comments and maps (LABEL) declarations to ROM addresses.</div>
+              <div id="asm-pass2-line">Pass 2 (Variables &amp; Binary): encodes A/C instructions and assigns RAM variables from address 16.</div>
+              <div id="asm-mod3-line">K = 51 (51 mod 3 = 0): exports all predefined symbols, labels, and variables to symbols.txt.</div>
+            </div>
           </div>
 
           <div class="panel">
@@ -201,12 +215,12 @@
         </div>
       </section>
 
-      <!-- TAB 3: HDL CHIP ARCHITECTURE -->
+      <!-- TAB 3: PART A - HDL CHIP ARCHITECTURE -->
       <section id="panel-hdl" role="tabpanel" aria-labelledby="tab-hdl" hidden>
         <div class="panel-grid">
           <div class="panel">
             <div class="panel-header">
-              <h2>Part A: HDL Verification Suite</h2>
+              <h2>Part A: Hack Computer Verification</h2>
               <button type="button" class="btn btn--primary" id="btn-run-verify">Run Verification Suite</button>
             </div>
 
@@ -244,8 +258,10 @@
             </div>
 
             <div class="proof-block">
-              <div class="proof-title">Hack Computer Signal Path</div>
-              <pre class="code-view" style="max-height: 220px;">+--------+   instruction[16]   +-----+   outM[16], writeM   +--------+
+              <div class="proof-title">Part A: Hardware Modules &amp; Built-In Chips</div>
+              <div>Memory.hdl: DMux load routing + Mux4Way16 across RAM16K (0..16383), built-in Screen (16384..24575), built-in Keyboard (24576).</div>
+              <div>CPU.hdl: ARegister, DRegister, ALU (zr, ng flags), and PC jump decoding. Computer.hdl wires built-in ROM32K, CPU, and Memory.</div>
+              <pre class="code-view" style="max-height: 180px;">+--------+   instruction[16]   +-----+   outM[16], writeM   +--------+
 | ROM32K | ------------------&gt; | CPU | -------------------&gt; | Memory |
 |        | &lt;------------------ |     | &lt;------------------- | RAM16K |
 +--------+       pc[15]        +-----+       inM[16]        | Screen |
@@ -256,7 +272,7 @@
 
           <div class="panel">
             <div class="panel-header">
-              <h2>HDL &amp; Test Script Source</h2>
+              <h2>Part A: HDL, Test &amp; Compare Files</h2>
               <span class="status-chip" id="hdl-file-chip">Memory.hdl</span>
             </div>
 
@@ -265,8 +281,11 @@
               <button type="button" class="btn" data-hdl="CPU.hdl">CPU.hdl</button>
               <button type="button" class="btn" data-hdl="Computer.hdl">Computer.hdl</button>
               <button type="button" class="btn" data-hdl="Memory.tst">Memory.tst</button>
+              <button type="button" class="btn" data-hdl="Memory.cmp">Memory.cmp</button>
               <button type="button" class="btn" data-hdl="CPU.tst">CPU.tst</button>
+              <button type="button" class="btn" data-hdl="CPU.cmp">CPU.cmp</button>
               <button type="button" class="btn" data-hdl="ComputerAdd.tst">ComputerAdd.tst</button>
+              <button type="button" class="btn" data-hdl="ComputerAdd.cmp">ComputerAdd.cmp</button>
             </div>
 
             <pre class="code-view" id="hdl-source-view">Loading HDL file...</pre>

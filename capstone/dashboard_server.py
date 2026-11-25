@@ -91,6 +91,8 @@ def assemble_source(asm_text: str, k_val: int = 51) -> dict:
         "k": k_val,
         "kMod3": k_val % 3,
         "instructionCount": len(binary_code),
+        "labelCount": len(assembler.labels),
+        "variableCount": len(assembler.variables),
         "hack": "\n".join(binary_code),
         "romWords": [int(b, 2) for b in binary_code],
         "symbols": assembler.symbol_table,
@@ -193,8 +195,11 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                     "CPU.hdl": _read_text("Part_A/CPU.hdl"),
                     "Computer.hdl": _read_text("Part_A/Computer.hdl"),
                     "Memory.tst": _read_text("Part_A/Memory.tst"),
+                    "Memory.cmp": _read_text("Part_A/Memory.cmp"),
                     "CPU.tst": _read_text("Part_A/CPU.tst"),
+                    "CPU.cmp": _read_text("Part_A/CPU.cmp"),
                     "ComputerAdd.tst": _read_text("Part_A/ComputerAdd.tst"),
+                    "ComputerAdd.cmp": _read_text("Part_A/ComputerAdd.cmp"),
                 },
                 "files": [
                     {

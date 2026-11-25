@@ -311,6 +311,15 @@ class HackBrowserCPU {
     const modDesc = ["Save symbols.txt", "Line-numbered errors", "Duplicate label warning"][kMod3];
     document.getElementById("asm-k-badge").textContent = `K mod 3 = ${kMod3} (${modDesc})`;
 
+    const labelEntries = Object.entries(res.labels || {}).map(([k, v]) => `${k}=${v}`).join(", ") || "none";
+    const varEntries = Object.entries(res.variables || {}).map(([k, v]) => `${k}@${v}`).join(", ") || "none";
+    document.getElementById("asm-pass1-line").textContent =
+      `Pass 1 (Labels): ${res.labelCount || 0} label(s) recorded (${labelEntries}).`;
+    document.getElementById("asm-pass2-line").textContent =
+      `Pass 2 (Variables & Binary): ${res.variableCount || 0} RAM variable(s) allocated from 16 (${varEntries}).`;
+    document.getElementById("asm-mod3-line").textContent =
+      `K = ${res.k !== undefined ? res.k : 51} (K mod 3 = ${kMod3}): ${modDesc}.`;
+
     if (!res.ok) {
       statusChip.textContent = `${res.errors.length} error(s)`;
       statusChip.className = "status-chip is-error";
@@ -487,6 +496,17 @@ class HackBrowserCPU {
     const shifted = Math.min(235, current + 10);
     vivaInput.value = String(shifted);
     applyKToSimulator(shifted);
+  });
+
+  document.getElementById("btn-sim-shift").addEventListener("click", () => {
+    const shifted = Math.min(235, state.k + 10);
+    vivaInput.value = String(shifted);
+    applyKToSimulator(shifted);
+  });
+
+  document.getElementById("btn-sim-reset-k").addEventListener("click", () => {
+    vivaInput.value = "51";
+    applyKToSimulator(51);
   });
 
   // Checklist counter
