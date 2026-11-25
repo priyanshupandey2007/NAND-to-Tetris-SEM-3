@@ -1,7 +1,8 @@
 # Nand to Tetris - I (ETCNTC301)
 ## Capstone Project: Make the Computer Draw a Box
 **School of Engineering & Technology, K.R. Mangalam University**  
-**Student:** Priyanshu Pandey | **Roll Number:** 2501730051 | **Personal Number (K):** 51
+**Student:** Priyanshu Pandey | **Roll Number:** 2501730051 | **Personal Number (K):** 51  
+**Live Dashboard:** [https://priyanshupandey2007.github.io/NAND-to-Tetris-SEM-3/capstone/dashboard.html](https://priyanshupandey2007.github.io/NAND-to-Tetris-SEM-3/capstone/dashboard.html)
 
 ---
 
