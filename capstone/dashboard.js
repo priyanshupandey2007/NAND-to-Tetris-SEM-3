@@ -354,15 +354,21 @@ class HackBrowserCPU {
     btn.disabled = true;
     btn.textContent = "Assembling...";
     try {
-      const resp = await fetch("/api/assemble", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ asm: asmText, k: kVal }),
-      });
-      const data = await resp.json();
+      let data;
+      try {
+        const resp = await fetch("/api/assemble", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ asm: asmText, k: kVal }),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        data = await resp.json();
+      } catch (_) {
+        data = window.HackStaticEngine.assemble(asmText, kVal);
+      }
       renderAssemblerOutput(data);
     } catch (err) {
-      renderAssemblerOutput({ ok: false, errors: [`Server error: ${err.message}`], symbols: {}, warnings: [] });
+      renderAssemblerOutput({ ok: false, errors: [`Assembler error: ${err.message}`], symbols: {}, warnings: [] });
     } finally {
       btn.disabled = false;
       btn.textContent = "Assemble with Python";
@@ -434,15 +440,21 @@ class HackBrowserCPU {
     banner.textContent = "Executing verify_capstone.py suite...";
 
     try {
-      const resp = await fetch("/api/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ k: 51 }),
-      });
-      const data = await resp.json();
+      let data;
+      try {
+        const resp = await fetch("/api/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ k: 51 }),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        data = await resp.json();
+      } catch (_) {
+        data = window.HackStaticEngine.verifyInBrowser(state.project, 51, HackBrowserCPU);
+      }
       banner.className = data.ok ? "message-banner is-success" : "message-banner is-error";
       banner.textContent = data.ok
-        ? "All verification checks passed (exit 0)."
+        ? "All verification checks passed."
         : "One or more verification checks failed.";
       tbody.innerHTML = data.checks.map((chk) => (
         `<tr><td>${chk.name}</td><td>${chk.passed ? "PASSED" : "FAILED"}</td><td>${chk.detail}</td></tr>`
@@ -467,12 +479,18 @@ class HackBrowserCPU {
     const btn = document.getElementById("btn-apply-k");
     btn.disabled = true;
     try {
-      const resp = await fetch("/api/generate-box", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ k: kVal }),
-      });
-      const data = await resp.json();
+      let data;
+      try {
+        const resp = await fetch("/api/generate-box", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ k: kVal }),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        data = await resp.json();
+      } catch (_) {
+        data = window.HackStaticEngine.generateBox(kVal);
+      }
       if (data.ok && data.assembled) {
         updateParameterDisplays(kVal);
         document.getElementById("asm-editor").value = data.asm;
@@ -526,10 +544,19 @@ class HackBrowserCPU {
     link.click();
   });
 
-  // Boot: load real project files from Python backend
+  // Boot: load real project files from Python backend (or static project_data.json on GitHub Pages)
   async function loadProject() {
-    const resp = await fetch("/api/project-data");
-    const proj = await resp.json();
+    let proj;
+    let isStaticMode = false;
+    try {
+      const resp = await fetch("/api/project-data");
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      proj = await resp.json();
+    } catch (_) {
+      isStaticMode = true;
+      const resp = await fetch("./project_data.json");
+      proj = await resp.json();
+    }
     state.project = proj;
 
     document.getElementById("asm-editor").value = proj.programs.boxAsm;
@@ -547,12 +574,22 @@ class HackBrowserCPU {
     }).join("");
 
     // Initial assemble + boot CPU with Box.hack
-    const initialAsm = await fetch("/api/assemble", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ asm: proj.programs.boxAsm, k: 51 }),
-    });
-    const asmData = await initialAsm.json();
+    let asmData;
+    if (isStaticMode) {
+      asmData = window.HackStaticEngine.assemble(proj.programs.boxAsm, 51);
+    } else {
+      try {
+        const initialAsm = await fetch("/api/assemble", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ asm: proj.programs.boxAsm, k: 51 }),
+        });
+        if (!initialAsm.ok) throw new Error(`HTTP ${initialAsm.status}`);
+        asmData = await initialAsm.json();
+      } catch (_) {
+        asmData = window.HackStaticEngine.assemble(proj.programs.boxAsm, 51);
+      }
+    }
     renderAssemblerOutput(asmData);
 
     updateParameterDisplays(51);

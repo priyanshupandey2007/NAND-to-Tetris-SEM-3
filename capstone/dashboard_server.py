@@ -137,6 +137,66 @@ def run_verification_suite(k_val: int = 51) -> dict:
     }
 
 
+def build_project_data() -> dict:
+    box_asm = _read_text("Part_C/Box.asm")
+    box_hack = _read_text("Part_C/Box.hack")
+    add_asm = _read_text("Part_B/Add.asm")
+    add_hack = _read_text("Part_B/Add.hack")
+    symbols_txt = _read_text("Part_C/symbols.txt")
+    rom_words = [int(line.strip(), 2) for line in box_hack.splitlines() if line.strip()]
+    return {
+        "student": {
+            "name": "Priyanshu Pandey",
+            "rollNumber": "2501730051",
+            "course": "Nand to Tetris - I (ETCNTC301)",
+            "program": "B.Tech CSE (AI/ML)",
+            "school": "School of Engineering & Technology, K.R. Mangalam University",
+        },
+        "params": compute_k_params(51),
+        "programs": {
+            "boxAsm": box_asm,
+            "boxHack": box_hack,
+            "boxRomWords": rom_words,
+            "addAsm": add_asm,
+            "addHack": add_hack,
+            "symbolsTxt": symbols_txt,
+        },
+        "hdl": {
+            "Memory.hdl": _read_text("Part_A/Memory.hdl"),
+            "CPU.hdl": _read_text("Part_A/CPU.hdl"),
+            "Computer.hdl": _read_text("Part_A/Computer.hdl"),
+            "Memory.tst": _read_text("Part_A/Memory.tst"),
+            "Memory.cmp": _read_text("Part_A/Memory.cmp"),
+            "CPU.tst": _read_text("Part_A/CPU.tst"),
+            "CPU.cmp": _read_text("Part_A/CPU.cmp"),
+            "ComputerAdd.tst": _read_text("Part_A/ComputerAdd.tst"),
+            "ComputerAdd.cmp": _read_text("Part_A/ComputerAdd.cmp"),
+        },
+        "files": [
+            {
+                "name": fname,
+                "exists": os.path.exists(os.path.join(BASE_DIR, fname)),
+                "sizeBytes": os.path.getsize(os.path.join(BASE_DIR, fname))
+                if os.path.exists(os.path.join(BASE_DIR, fname)) else 0,
+            }
+            for fname in [
+                "Part_A/CPU.hdl", "Part_A/Memory.hdl", "Part_A/Computer.hdl",
+                "Part_B/assembler.py", "Part_B/Add.asm", "Part_B/Add.hack", "Part_B/symbols.txt",
+                "Part_C/Box.asm", "Part_C/Box.hack", "Part_C/symbols.txt",
+                "Part_C/generate_box_asm.py", "Part_C/cpu_emulator.py",
+                "verify_capstone.py", "Priyanshu_Pandey_2501730051_Capstone_Report.pdf",
+            ]
+        ],
+    }
+
+
+def export_static_data() -> str:
+    out_path = os.path.join(BASE_DIR, "project_data.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(build_project_data(), f, indent=2)
+    return out_path
+
+
 class DashboardHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
@@ -172,57 +232,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/project-data":
-            box_asm = _read_text("Part_C/Box.asm")
-            box_hack = _read_text("Part_C/Box.hack")
-            add_asm = _read_text("Part_B/Add.asm")
-            add_hack = _read_text("Part_B/Add.hack")
-            symbols_txt = _read_text("Part_C/symbols.txt")
-            rom_words = [int(line.strip(), 2) for line in box_hack.splitlines() if line.strip()]
-            payload = {
-                "student": {
-                    "name": "Priyanshu Pandey",
-                    "rollNumber": "2501730051",
-                    "course": "Nand to Tetris - I (ETCNTC301)",
-                    "program": "B.Tech CSE (AI/ML)",
-                    "school": "School of Engineering & Technology, K.R. Mangalam University",
-                },
-                "params": compute_k_params(51),
-                "programs": {
-                    "boxAsm": box_asm,
-                    "boxHack": box_hack,
-                    "boxRomWords": rom_words,
-                    "addAsm": add_asm,
-                    "addHack": add_hack,
-                    "symbolsTxt": symbols_txt,
-                },
-                "hdl": {
-                    "Memory.hdl": _read_text("Part_A/Memory.hdl"),
-                    "CPU.hdl": _read_text("Part_A/CPU.hdl"),
-                    "Computer.hdl": _read_text("Part_A/Computer.hdl"),
-                    "Memory.tst": _read_text("Part_A/Memory.tst"),
-                    "Memory.cmp": _read_text("Part_A/Memory.cmp"),
-                    "CPU.tst": _read_text("Part_A/CPU.tst"),
-                    "CPU.cmp": _read_text("Part_A/CPU.cmp"),
-                    "ComputerAdd.tst": _read_text("Part_A/ComputerAdd.tst"),
-                    "ComputerAdd.cmp": _read_text("Part_A/ComputerAdd.cmp"),
-                },
-                "files": [
-                    {
-                        "name": fname,
-                        "exists": os.path.exists(os.path.join(BASE_DIR, fname)),
-                        "sizeBytes": os.path.getsize(os.path.join(BASE_DIR, fname))
-                        if os.path.exists(os.path.join(BASE_DIR, fname)) else 0,
-                    }
-                    for fname in [
-                        "Part_A/CPU.hdl", "Part_A/Memory.hdl", "Part_A/Computer.hdl",
-                        "Part_B/assembler.py", "Part_B/Add.asm", "Part_B/Add.hack", "Part_B/symbols.txt",
-                        "Part_C/Box.asm", "Part_C/Box.hack", "Part_C/symbols.txt",
-                        "Part_C/generate_box_asm.py", "Part_C/cpu_emulator.py",
-                        "verify_capstone.py", "Priyanshu_Pandey_2501730051_Capstone_Report.pdf",
-                    ]
-                ],
-            }
-            self._send_json(payload)
+            self._send_json(build_project_data())
             return
 
         super().do_GET()
@@ -285,5 +295,9 @@ def serve(port: int = DEFAULT_PORT) -> None:
 
 
 if __name__ == "__main__":
-    chosen_port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
-    serve(chosen_port)
+    if "--export-static" in sys.argv:
+        path = export_static_data()
+        print(f"Exported static snapshot: {path}")
+    else:
+        chosen_port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
+        serve(chosen_port)

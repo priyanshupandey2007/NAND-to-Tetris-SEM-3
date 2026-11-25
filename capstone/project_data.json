@@ -1,0 +1,202 @@
+{
+  "student": {
+    "name": "Priyanshu Pandey",
+    "rollNumber": "2501730051",
+    "course": "Nand to Tetris - I (ETCNTC301)",
+    "program": "B.Tech CSE (AI/ML)",
+    "school": "School of Engineering & Technology, K.R. Mangalam University"
+  },
+  "params": {
+    "k": 51,
+    "startRow": 51,
+    "endRow": 70,
+    "height": 20,
+    "wordsPerRow": 4,
+    "widthPx": 64,
+    "baseAddr": 18016,
+    "baseAddrHex": "0x4660",
+    "endAddr": 18627,
+    "kMod3": 0,
+    "kMod3Desc": "Export all predefined symbols, ROM labels, and RAM variables to symbols.txt"
+  },
+  "programs": {
+    "boxAsm": "// ==================================================================\n// Capstone Project: Box.asm\n// Course: Nand to Tetris - I (ETCNTC301)\n// School of Engineering & Technology, K.R. Mangalam University\n//\n// Student Name            : Priyanshu Pandey\n// Roll Number             : 2501730051\n// Personal Number K       : 51\n// Starting Row            : 51 (rows 51 to 70)\n// Box Height              : 20 rows\n// Box Width               : 64 pixels (4 16-bit words/row)\n// Screen Base Address     : SCREEN + 32 * 51 = 16384 + 1632 = 18016\n// ==================================================================\n\n// Main polling loop and box setup in Box.asm (K = 51)\n(MAIN_LOOP)\n    @KBD\n    D=M\n    @DRAW_BOX\n    D;JNE       // Draw box if any key is pressed\n    @CLEAR_BOX\n    0;JMP       // Clear box if no key is pressed\n\n(DRAW_BOX)\n    @18016\n    D=A\n    @rowAddr\n    M=D         // Start at row 51 (16384 + 32 * 51)\n    @20\n    D=A\n    @rowCount\n    M=D         // Repeat for 20 rows\n\n(DRAW_ROW_LOOP)\n    @rowCount\n    D=M\n    @MAIN_LOOP\n    D;JEQ       // Return to polling once all rows are drawn\n\n    @rowAddr\n    D=M\n    @wordAddr\n    M=D         // Reset wordAddr = rowAddr at the start of every row\n\n    @4\n    D=A\n    @wordCount\n    M=D         // 4 word(s) across (64 pixels)\n\n(DRAW_WORD_LOOP)\n    @wordCount\n    D=M\n    @DRAW_NEXT_ROW\n    D;JEQ\n\n    @wordAddr\n    A=M\n    M=-1        // Turn 16 pixels black (-1)\n\n    @wordAddr\n    M=M+1       // Advance to next word in row\n    @wordCount\n    M=M-1\n    @DRAW_WORD_LOOP\n    0;JMP\n\n(DRAW_NEXT_ROW)\n    @32\n    D=A\n    @rowAddr\n    M=D+M       // Next row starts 32 words further down\n    @rowCount\n    M=M-1\n    @DRAW_ROW_LOOP\n    0;JMP\n\n(CLEAR_BOX)\n    @18016\n    D=A\n    @rowAddr\n    M=D         // Start at row 51 (16384 + 32 * 51)\n    @20\n    D=A\n    @rowCount\n    M=D         // Repeat for 20 rows\n\n(CLEAR_ROW_LOOP)\n    @rowCount\n    D=M\n    @MAIN_LOOP\n    D;JEQ       // Return to polling once all rows are cleared\n\n    @rowAddr\n    D=M\n    @wordAddr\n    M=D         // Reset wordAddr = rowAddr at the start of every row\n\n    @4\n    D=A\n    @wordCount\n    M=D         // 4 word(s) across (64 pixels)\n\n(CLEAR_WORD_LOOP)\n    @wordCount\n    D=M\n    @CLEAR_NEXT_ROW\n    D;JEQ\n\n    @wordAddr\n    A=M\n    M=0         // Clear 16 pixels back to white (0)\n\n    @wordAddr\n    M=M+1       // Advance to next word in row\n    @wordCount\n    M=M-1\n    @CLEAR_WORD_LOOP\n    0;JMP\n\n(CLEAR_NEXT_ROW)\n    @32\n    D=A\n    @rowAddr\n    M=D+M       // Next row starts 32 words further down\n    @rowCount\n    M=M-1\n    @CLEAR_ROW_LOOP\n    0;JMP\n",
+    "boxHack": "0110000000000000\n1111110000010000\n0000000000000110\n1110001100000101\n0000000000101111\n1110101010000111\n0100011001100000\n1110110000010000\n0000000000010000\n1110001100001000\n0000000000010100\n1110110000010000\n0000000000010001\n1110001100001000\n0000000000010001\n1111110000010000\n0000000000000000\n1110001100000010\n0000000000010000\n1111110000010000\n0000000000010010\n1110001100001000\n0000000000000100\n1110110000010000\n0000000000010011\n1110001100001000\n0000000000010011\n1111110000010000\n0000000000100111\n1110001100000010\n0000000000010010\n1111110000100000\n1110111010001000\n0000000000010010\n1111110111001000\n0000000000010011\n1111110010001000\n0000000000011010\n1110101010000111\n0000000000100000\n1110110000010000\n0000000000010000\n1111000010001000\n0000000000010001\n1111110010001000\n0000000000001110\n1110101010000111\n0100011001100000\n1110110000010000\n0000000000010000\n1110001100001000\n0000000000010100\n1110110000010000\n0000000000010001\n1110001100001000\n0000000000010001\n1111110000010000\n0000000000000000\n1110001100000010\n0000000000010000\n1111110000010000\n0000000000010010\n1110001100001000\n0000000000000100\n1110110000010000\n0000000000010011\n1110001100001000\n0000000000010011\n1111110000010000\n0000000001010000\n1110001100000010\n0000000000010010\n1111110000100000\n1110101010001000\n0000000000010010\n1111110111001000\n0000000000010011\n1111110010001000\n0000000001000011\n1110101010000111\n0000000000100000\n1110110000010000\n0000000000010000\n1111000010001000\n0000000000010001\n1111110010001000\n0000000000110111\n1110101010000111\n",
+    "boxRomWords": [
+      24576,
+      64528,
+      6,
+      58117,
+      47,
+      60039,
+      18016,
+      60432,
+      16,
+      58120,
+      20,
+      60432,
+      17,
+      58120,
+      17,
+      64528,
+      0,
+      58114,
+      16,
+      64528,
+      18,
+      58120,
+      4,
+      60432,
+      19,
+      58120,
+      19,
+      64528,
+      39,
+      58114,
+      18,
+      64544,
+      61064,
+      18,
+      64968,
+      19,
+      64648,
+      26,
+      60039,
+      32,
+      60432,
+      16,
+      61576,
+      17,
+      64648,
+      14,
+      60039,
+      18016,
+      60432,
+      16,
+      58120,
+      20,
+      60432,
+      17,
+      58120,
+      17,
+      64528,
+      0,
+      58114,
+      16,
+      64528,
+      18,
+      58120,
+      4,
+      60432,
+      19,
+      58120,
+      19,
+      64528,
+      80,
+      58114,
+      18,
+      64544,
+      60040,
+      18,
+      64968,
+      19,
+      64648,
+      67,
+      60039,
+      32,
+      60432,
+      16,
+      61576,
+      17,
+      64648,
+      55,
+      60039
+    ],
+    "addAsm": "// Computes R0 = 2 + 3\n@2\nD=A\n@3\nD=D+A\n@0\nM=D\n",
+    "addHack": "0000000000000010\n1110110000010000\n0000000000000011\n1110000010010000\n0000000000000000\n1110001100001000\n",
+    "symbolsTxt": "SP: 0\nLCL: 1\nARG: 2\nTHIS: 3\nTHAT: 4\nSCREEN: 16384\nKBD: 24576\nR0: 0\nR1: 1\nR2: 2\nR3: 3\nR4: 4\nR5: 5\nR6: 6\nR7: 7\nR8: 8\nR9: 9\nR10: 10\nR11: 11\nR12: 12\nR13: 13\nR14: 14\nR15: 15\nMAIN_LOOP: 0\nDRAW_BOX: 6\nDRAW_ROW_LOOP: 14\nDRAW_WORD_LOOP: 26\nDRAW_NEXT_ROW: 39\nCLEAR_BOX: 47\nCLEAR_ROW_LOOP: 55\nCLEAR_WORD_LOOP: 67\nCLEAR_NEXT_ROW: 80\nrowAddr: 16\nrowCount: 17\nwordAddr: 18\nwordCount: 19\n"
+  },
+  "hdl": {
+    "Memory.hdl": "// Capstone Project: Hack Computer - Memory\n// Nand to Tetris - I (ETCNTC301)\n// School of Engineering & Technology, K.R. Mangalam University\n// Student: Priyanshu Pandey (2501730051, K = 51)\n\nCHIP Memory {\n    IN in[16], load, address[15];\n    OUT out[16];\n\n    PARTS:\n    // Data RAM (0x0000 - 0x3FFF): RAM16K when address[14] == 0\n    // Screen Map (0x4000 - 0x5FFF): Screen when address[14] == 1 and address[13] == 0\n    // Keyboard Map (0x6000): Keyboard when address[14] == 1 and address[13] == 1\n\n    DMux(in=load, sel=address[14], a=loadRAM, b=loadIO);\n    DMux(in=loadIO, sel=address[13], a=loadScreen, b=loadKbd);\n\n    RAM16K(in=in, load=loadRAM, address=address[0..13], out=outRAM);\n    Screen(in=in, load=loadScreen, address=address[0..12], out=outScreen);\n    Keyboard(out=outKbd);\n\n    Mux4Way16(a=outRAM, b=outRAM, c=outScreen, d=outKbd, sel=address[13..14], out=out);\n}\n",
+    "CPU.hdl": "// Capstone Project: Hack Computer - CPU\n// Nand to Tetris - I (ETCNTC301)\n// School of Engineering & Technology, K.R. Mangalam University\n// Student: Priyanshu Pandey (2501730051, K = 51)\n\nCHIP CPU {\n\n    IN  inM[16],         // M value input  (M = contents of RAM[A])\n        instruction[16], // Instruction for execution\n        reset;           // Signals whether to re-start the current\n                         // program (reset==1) or continue executing\n                         // the current program (reset==0).\n\n    OUT outM[16],        // M value output\n        writeM,          // Write to M?\n        addressM[15],    // Address in data memory (of M)\n        pc[15];          // address of next instruction\n\n    PARTS:\n    // Instruction decoding:\n    // A-instruction: instruction[15] == 0\n    // C-instruction: instruction[15] == 1\n    Not(in=instruction[15], out=isA);\n    Not(in=isA, out=isC);\n\n    // A register multiplexer: selects instruction or ALU output\n    Mux16(a=instruction, b=outALU, sel=instruction[15], out=inA);\n\n    // A register load condition\n    And(a=isC, b=instruction[5], out=cLoadA);\n    Or(a=isA, b=cLoadA, out=loadA);\n    ARegister(in=inA, load=loadA, out=outA, out[0..14]=addressM);\n\n    // ALU input Y: selects between A register and inM\n    Mux16(a=outA, b=inM, sel=instruction[12], out=inALUY);\n\n    // D register load condition\n    And(a=isC, b=instruction[4], out=loadD);\n    DRegister(in=outALU, load=loadD, out=outD);\n\n    // ALU computation\n    ALU(x=outD, y=inALUY,\n        zx=instruction[11],\n        nx=instruction[10],\n        zy=instruction[9],\n        ny=instruction[8],\n        f=instruction[7],\n        no=instruction[6],\n        out=outALU,\n        out=outM,\n        zr=zr,\n        ng=ng);\n\n    // writeM condition\n    And(a=isC, b=instruction[3], out=writeM);\n\n    // PC jump conditions:\n    Or(a=zr, b=ng, out=zrOrNg);\n    Not(in=zrOrNg, out=pos);\n\n    And(a=instruction[2], b=ng, out=jlt); // j1: out < 0\n    And(a=instruction[1], b=zr, out=jeq); // j2: out == 0\n    And(a=instruction[0], b=pos, out=jgt); // j3: out > 0\n\n    Or(a=jlt, b=jeq, out=jle);\n    Or(a=jle, b=jgt, out=jumpCondition);\n    And(a=isC, b=jumpCondition, out=loadPC);\n\n    PC(in=outA, load=loadPC, inc=true, reset=reset, out[0..14]=pc);\n}\n",
+    "Computer.hdl": "// Capstone Project: Hack Computer - Complete Computer\n// Nand to Tetris - I (ETCNTC301)\n// School of Engineering & Technology, K.R. Mangalam University\n// Student: Priyanshu Pandey (2501730051, K = 51)\n\nCHIP Computer {\n\n    IN reset;\n\n    PARTS:\n    ROM32K(address=pc, out=instruction);\n    CPU(inM=inM, instruction=instruction, reset=reset, outM=outM, writeM=writeM, addressM=addressM, pc=pc);\n    Memory(in=outM, load=writeM, address=addressM, out=inM);\n}\n",
+    "Memory.tst": "// This file is part of www.nand2tetris.org\n// and the book \"The Elements of Computing Systems\"\n// by Nisan and Schocken, MIT Press.\n// File name: projects/05/Memory.tst\n\nload Memory.hdl,\noutput-file Memory.out,\ncompare-to Memory.cmp,\noutput-list time%S0.4.1 in%D1.7.1 load%B2.1.2 address%D1.5.1 out%D1.7.1;\n\n// RAM[0] = 333\nset in 333,\nset load 1,\nset address 0,\ntick, tock, output;\n\n// Read RAM[0]\nset in 0,\nset load 0,\nset address 0,\ntick, tock, output;\n\n// Screen[0] = 444\nset in 444,\nset load 1,\nset address 16384,\ntick, tock, output;\n\n// Read Screen[0]\nset in 0,\nset load 0,\nset address 16384,\ntick, tock, output;\n\n// Keyboard test (address 24576)\nset address 24576,\ntick, tock, output;\n",
+    "Memory.cmp": "| time |  in   |load|address|  out  |\n| 0+   |    333|  1 |     0|    333|\n| 1    |      0|  0 |     0|    333|\n| 2    |    444|  1 | 16384|    444|\n| 3    |      0|  0 | 16384|    444|\n| 4    |      0|  0 | 24576|      0|\n",
+    "CPU.tst": "// This file is part of www.nand2tetris.org\n// and the book \"The Elements of Computing Systems\"\n// by Nisan and Schocken, MIT Press.\n// File name: projects/05/CPU.tst\n\nload CPU.hdl,\noutput-file CPU.out,\ncompare-to CPU.cmp,\noutput-list time%S0.4.1 inM%B1.16.1 instruction%B1.16.1 reset%B2.1.2 outM%B1.16.1 writeM%B2.1.2 addressM%D1.15.1 pc%D1.15.1;\n\n// Load A with 12345\nset inM 0,\nset instruction %B0011000000111001,\nset reset 0,\ntick, tock, output;\n\n// D = A\nset instruction %B1110110000010000,\ntick, tock, output;\n\n// Load A with 23456\nset instruction %B0101101110100000,\ntick, tock, output;\n\n// D = D - A\nset instruction %B1110010011010000,\ntick, tock, output;\n\n// If D < 0 jump to 12345\nset instruction %B0011000000111001,\ntick, tock, output;\n\nset instruction %B1110001100000100,\ntick, tock, output;\n\n// Jump\ntick, tock, output;\n\n// Reset\nset reset 1,\ntick, tock, output;\n",
+    "CPU.cmp": "| time |      inM         |  instruction     |reset|      outM        |writeM|addressM|  pc   |\n| 0+   | 0000000000000000 | 0011000000111001 |  0  | 0000000000000000 |  0   |  12345 |     1 |\n| 1    | 0000000000000000 | 1110110000010000 |  0  | 0011000000111001 |  0   |  12345 |     2 |\n| 2    | 0000000000000000 | 0101101110100000 |  0  | 0011000000111001 |  0   |  23456 |     3 |\n| 3    | 0000000000000000 | 1110010011010000 |  0  | 1101010010011001 |  0   |  23456 |     4 |\n| 4    | 0000000000000000 | 0011000000111001 |  0  | 1101010010011001 |  0   |  12345 |     5 |\n| 5    | 0000000000000000 | 1110001100000100 |  0  | 1101010010011001 |  0   |  12345 | 12345 |\n| 6    | 0000000000000000 | 1110001100000100 |  0  | 1101010010011001 |  0   |  12345 | 12346 |\n| 7    | 0000000000000000 | 1110001100000100 |  1  | 1101010010011001 |  0   |  12345 |     0 |\n",
+    "ComputerAdd.tst": "// ComputerAdd.tst\nload Computer.hdl,\noutput-file ComputerAdd.out,\ncompare-to ComputerAdd.cmp,\noutput-list time%S0.4.1 reset%B2.1.2 ARegister[]%D1.7.1 DRegister[]%D1.7.1;\n\n// Load Add.hack into ROM32K\nROM32K load Add.hack,\n\n// Reset execution\nset reset 1,\ntick, tock, output;\n\nset reset 0,\nrepeat 6 {\n    tick, tock, output;\n}\n",
+    "ComputerAdd.cmp": "| time |reset|ARegist|DRegist|\n| 0+   |  1  |      0|      0|\n| 1    |  0  |      2|      0|\n| 2    |  0  |      2|      2|\n| 3    |  0  |      3|      2|\n| 4    |  0  |      3|      5|\n| 5    |  0  |      0|      5|\n| 6    |  0  |      0|      5|\n"
+  },
+  "files": [
+    {
+      "name": "Part_A/CPU.hdl",
+      "exists": true,
+      "sizeBytes": 2271
+    },
+    {
+      "name": "Part_A/Memory.hdl",
+      "exists": true,
+      "sizeBytes": 886
+    },
+    {
+      "name": "Part_A/Computer.hdl",
+      "exists": true,
+      "sizeBytes": 459
+    },
+    {
+      "name": "Part_B/assembler.py",
+      "exists": true,
+      "sizeBytes": 9492
+    },
+    {
+      "name": "Part_B/Add.asm",
+      "exists": true,
+      "sizeBytes": 53
+    },
+    {
+      "name": "Part_B/Add.hack",
+      "exists": true,
+      "sizeBytes": 108
+    },
+    {
+      "name": "Part_B/symbols.txt",
+      "exists": true,
+      "sizeBytes": 192
+    },
+    {
+      "name": "Part_C/Box.asm",
+      "exists": true,
+      "sizeBytes": 2721
+    },
+    {
+      "name": "Part_C/Box.hack",
+      "exists": true,
+      "sizeBytes": 1584
+    },
+    {
+      "name": "Part_C/symbols.txt",
+      "exists": true,
+      "sizeBytes": 409
+    },
+    {
+      "name": "Part_C/generate_box_asm.py",
+      "exists": true,
+      "sizeBytes": 5098
+    },
+    {
+      "name": "Part_C/cpu_emulator.py",
+      "exists": true,
+      "sizeBytes": 8266
+    },
+    {
+      "name": "verify_capstone.py",
+      "exists": true,
+      "sizeBytes": 17037
+    },
+    {
+      "name": "Priyanshu_Pandey_2501730051_Capstone_Report.pdf",
+      "exists": true,
+      "sizeBytes": 17165
+    }
+  ]
+}
